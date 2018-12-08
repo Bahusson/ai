@@ -1,2 +1,3 @@
 # ai
-My fooling around with ai - nonprofessional stufff
+My advancements in the field of Machine_Learning. Basics. 
+TF+Keras on Fedora+Anaconda with old hardware and no suitable GPU.
