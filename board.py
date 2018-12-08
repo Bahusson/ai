@@ -16,10 +16,11 @@ y = tf.placeholder("float", [None, 10]) # 0-9 digits recognition => 10 classes
 
 # Create a model
 
-# Set model weights
+# Set model weights (?)
 W = tf.Variable(tf.zeros([784, 10]))
 b = tf.Variable(tf.zeros([10]))
 
+#What is 'Scope'?
 with tf.name_scope("Wx_b") as scope:
     # Construct a linear model
     model = tf.nn.softmax(tf.matmul(x, W) + b) # Softmax
@@ -31,7 +32,7 @@ b_h = tf.summary.histogram("biases", b)
 # More name scopes will clean up graph representation
 with tf.name_scope("cost_function") as scope:
     # Minimize error using cross entropy
-    # Cross entropy
+    # Cross entropy (?)
     cost_function = -tf.reduce_sum(y*tf.log(model))
     # Create a summary to monitor the cost function
     tf.summary.scalar("cost_function", cost_function)
@@ -41,7 +42,7 @@ with tf.name_scope("train") as scope:
     optimizer = tf.train.GradientDescentOptimizer(learning_rate).minimize(cost_function)
 
 # Initializing the variables
-init = tf.initialize_all_variables()
+init = tf.global_variables_initializer()
 
 # Merge all summaries into a single operator
 merged_summary_op = tf.summary.merge_all()
