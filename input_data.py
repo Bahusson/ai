@@ -1,14 +1,23 @@
 #!/usr/bin/env python
 
 """Functions for downloading and reading MNIST data."""
-import gzip
-import os
-from six.moves.urllib.request import urlretrieve
-import numpy
-SOURCE_URL = 'http://yann.lecun.com/exdb/mnist/'
+import gzip #Biblioteka rozpakowuje cyfry spakowane do formatu .gz
+# Przy tak niewielkiej próbce (150) raczej nie będę musiał ich pakować,
+# więc część kodu z funkcji zapewne też odpadnie.
+
+import os #Ta biblioteka mi się tym razem nie przyda.
+# os używany jest tu tylko do tworzenia ścieżki po automatycznym pobraniu
+# gotowych danych z internetu. Ja nie będę hostował na razie danych u siebie,
+# tylko wstawię je i sformatuję bezpośrednio do folderu. 
+from six.moves.urllib.request import urlretrieve #J.W.
+
+import numpy # Służy do czytania danych, których potem karmimy tensora.
+# Bez numpyego się nie obejdzie. Alternatuwą jest pandas, który również go zawiera.
+
+SOURCE_URL = 'http://yann.lecun.com/exdb/mnist/' #Źródło danych - u mnie do zmiany.
 
 
-def maybe_download(filename, work_directory):
+def maybe_download(filename, work_directory): #Ta funkcja u mnie odpadnie.
     """Download the data from Yann's website, unless it's already here."""
     if not os.path.exists(work_directory):
         os.mkdir(work_directory)
@@ -20,28 +29,28 @@ def maybe_download(filename, work_directory):
     return filepath
 
 
-def _read32(bytestream):
-    dt = numpy.dtype(numpy.uint32).newbyteorder('>')
-    return numpy.frombuffer(bytestream.read(4), dtype=dt)[0]
+def _read32(bytestream): #Funkcja występuje przy ekstrakcji obrazków i ich opisów.
+    dt = numpy.dtype(numpy.uint32).newbyteorder('>') #Tu wygląda na to, że następuje szeregowanie bajtów.
+    return numpy.frombuffer(bytestream.read(4), dtype=dt)[0] #To ma sens w kontekście #1#
 
-
-def extract_images(filename):
+def extract_images(filename): #Wyciąga obrazki z plików .gz i przyporządkowuje je
+    # do 4-wymiarowej matrycy o strukturze [Lp, Y, X, nasycenie(Alpha)]
     """Extract the images into a 4D uint8 numpy array [index, y, x, depth]."""
-    print('Extracting', filename)
-    with gzip.open(filename) as bytestream:
-        magic = _read32(bytestream)
-        if magic != 2051:
-            raise ValueError(
-                'Invalid magic number %d in MNIST image file: %s' %
-                (magic, filename))
-        num_images = _read32(bytestream)
-        rows = _read32(bytestream)
-        cols = _read32(bytestream)
-        buf = bytestream.read(rows * cols * num_images)
-        data = numpy.frombuffer(buf, dtype=numpy.uint8)
-        data = data.reshape(num_images, rows, cols, 1)
-        return data
-
+    print('Extracting', filename) #Ta linijka do zmiany, bo nie rozpakowujemy.
+    with gzip.open(filename) as bytestream: #Ta linijka odpadnie. 
+        magic = _read32(bytestream) # Dowiedz się po co ten error check
+        if magic != 2051:           # była gdzieś jakaś liczba przy MNIST
+            raise ValueError(       # i on ją tu sprawdza, ale dlaczego taka?
+                'Invalid magic number %d in MNIST image file: %s' % # Możliwe, że u mnie nie będzie potrzebne, ale lepiej wiedzieć ocb.
+                (magic, filename))  
+        num_images = _read32(bytestream) #Tutaj wyciągamy te cztery wymiary
+        rows = _read32(bytestream)       #jako zmienne przy pomocy funkcji _read32
+        cols = _read32(bytestream)       #tj. mamy trzy zmienne, bo natężenie (tutaj jako cyfry) docelowo występuje w formie powiedzmy [[[0,1],[2,1]],[[0,5],[8,1]]] x Lp
+        buf = bytestream.read(rows * cols * num_images) #1# Tutaj byśmy składali takie trzy strumienie sformatowane identycznie w jeden "ciąg" wciąż o formacie 32. On to nazywa buforem.
+        data = numpy.frombuffer(buf, dtype=numpy.uint8) #A tutaj ten 'bufor' konwertujemy na nowy typ danych 'uint8'. Z tego co o nim wiem zapewne chodzi o kodowanie w skali szarości (Alpha).
+        data = data.reshape(num_images, rows, cols, 1) #Też metoda numpy'ego. Zwraca ciąg z bufora 'buf' w nowym kształcie bez zmiany danych. Zapewne po to, aby TF mógł to potem odczytać.
+        return data # Dane uszeregowane w jeden ciąg. Chyba. Zobaczmy co potem korzysta z "data"?
+                    # Poza analizą kodu zobaczmy jeszcze tutorial krok po kroku do porównania.
 
 def dense_to_one_hot(labels_dense, num_classes=10):
     """Convert class labels from scalars to one-hot vectors."""
@@ -93,7 +102,7 @@ class DataSet(object):
 
     @property
     def images(self):
-        return self._images
+        return self._images # Definiuje '_właściwości', żeby się nie nadpisywały.
 
     @property
     def labels(self):
