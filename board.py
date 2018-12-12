@@ -5,7 +5,8 @@ mnist = input_data.read_data_sets("data/", one_hot=True)
 import tensorflow as tf
 
 # Set parameters
-learning_rate = 0.01
+learning_rate = 0.01 # 'eta' - używane w gradient descent przy szukaniu minimum.
+# Ta eta jest dość drobiazgowa i zasobochłonna, ale jest mniejsza szansa na oscylację.
 training_iteration = 30
 batch_size = 100
 display_step = 2
@@ -16,11 +17,10 @@ y = tf.placeholder("float", [None, 10]) # 0-9 digits recognition => 10 classes
 
 # Create a model
 
-# Set model weights (?)
+# Set model weights and biases
 W = tf.Variable(tf.zeros([784, 10]))
 b = tf.Variable(tf.zeros([10]))
 
-#What is 'Scope'?
 with tf.name_scope("Wx_b") as scope:
     # Construct a linear model
     model = tf.nn.softmax(tf.matmul(x, W) + b) # Softmax
@@ -32,7 +32,9 @@ b_h = tf.summary.histogram("biases", b)
 # More name scopes will clean up graph representation
 with tf.name_scope("cost_function") as scope:
     # Minimize error using cross entropy
-    # Cross entropy (?)
+    # Cross entropy - nadaje koszt z funkcji logarytmicznej za każdy błąd.
+    # Im wyższy wynik CE tym większy błąd. Skala 0-1. 
+    # Tj. -1 * ln(confidence we właściwą odpowiedź - np. 0,4) wynik: [0.92]
     cost_function = -tf.reduce_sum(y*tf.log(model))
     # Create a summary to monitor the cost function
     tf.summary.scalar("cost_function", cost_function)
