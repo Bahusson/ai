@@ -44,6 +44,8 @@ Spis treści plików wg nauki z objaśnieniem:
 2.a Central_Project.ipynb - w tym zeszycie objaśnione są składowe części podstawowych metod TensorFlow.
 2.b Graph_creation.ipynb - Druga część powyższego. Wizualizacja grafu.
 3. Course_Pract_1.ipynb - Podjęcie kursu szczegółowego - początek tworzenia skrupulatnych notatek i komentarzy.
-4. Course_Pract_2 - Następny krok... <Tu uzupełniać>
+4. TF_Course_2.ipynb - Przejście z Numpy do TensorFlow. Model Liniowy.
+5. TF_Course_3.ipynb - Pierwszy model deep neural network. Na bazie MINST rzecz jasna.
+6. <cd.>
 
 W razie pytań lub uwag pisz do mnie na githubie, lub jeśli wolisz, na prywatnego maila: jakub.kozdrowicz(małpa)gmail.com
